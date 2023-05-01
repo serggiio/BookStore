@@ -57,9 +57,15 @@ namespace BookStore.Infrastructure.Repositories
             return db.Query<Author>(procedure, parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
         }
 
-        public void UpdateById(int id)
+        public void UpdateById(int id, Author entity)
         {
-            throw new NotImplementedException();
+            using IDbConnection db = new SqlConnection(this.connection.ConnectionString);
+            var procedure = "Update_Author";
+            var parameters = new DynamicParameters();
+            parameters.Add("@AuthorId", id, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@AuthorName", entity.Name, DbType.String, ParameterDirection.Input);
+            parameters.Add("@AuthorCountry", entity.Country, DbType.String, ParameterDirection.Input);
+            db.Query<Author>(procedure, parameters, commandType: CommandType.StoredProcedure);
         }
     }
 }

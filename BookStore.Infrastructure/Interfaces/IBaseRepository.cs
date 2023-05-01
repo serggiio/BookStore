@@ -15,7 +15,7 @@ namespace BookStore.Infrastructure.Interfaces
 
         public void Create(T entity);
 
-        public void UpdateById(int id);
+        public void UpdateById(int id, T entity);
 
         public void DeleteById(int id);
 

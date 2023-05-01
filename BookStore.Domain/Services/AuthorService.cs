@@ -1,8 +1,11 @@
 ﻿using BookStore.Domain.Interfaces;
 using BookStore.Domain.Models;
+using BookStore.Domain.Validators;
 using BookStore.Infrastructure.Entities;
 using BookStore.Infrastructure.Interfaces;
 using BookStore.Infrastructure.Repositories;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,9 +42,26 @@ namespace BookStore.Domain.Services
             return this._authorRepository.GetById(id);
         }
 
-        public ServiceResult<Author> UpdateById(Author author, int id)
+        public ServiceResult<AuthorResponse> UpdateById(JsonPatchDocument<Author> author, int id)
         {
-            throw new NotImplementedException();
+            Author authorStored = this._authorRepository.GetById(id);
+            AuthorResponse authorResponse = new AuthorResponse();
+            author.ApplyTo(authorStored);
+
+            AuthorValidator validator = new AuthorValidator();
+            ValidationResult validationResult = validator.Validate(authorStored);
+
+            if (validationResult.IsValid)
+            {
+                this._authorRepository.UpdateById(id, authorStored);
+                authorResponse.Author = authorStored;
+            }
+            else
+            {
+                authorResponse.Errors = validationResult.Errors;
+            }
+
+            return authorResponse;
         }
     }
 }

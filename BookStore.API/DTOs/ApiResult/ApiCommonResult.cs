@@ -11,7 +11,6 @@ namespace BookStore.API.DTOs.ApiResult
             this.Message = message;
         }
 
-        [ExcludeFromCodeCoverage]
         public ApiCommonResult(Exception? exception)
         {
             this.Message = exception is null ? ResponseMessages.NullExceptionMessage : $"{exception.Message}\n\n{exception.StackTrace}";

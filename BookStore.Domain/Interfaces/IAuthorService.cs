@@ -1,5 +1,6 @@
 ﻿using BookStore.Domain.Models;
 using BookStore.Infrastructure.Entities;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace BookStore.Domain.Interfaces
 {
@@ -11,7 +12,7 @@ namespace BookStore.Domain.Interfaces
 
         public void Create(Author author);
 
-        public ServiceResult<Author> UpdateById(Author author, int id);
+        public ServiceResult<AuthorResponse> UpdateById(JsonPatchDocument<Author> author, int id);
 
         public void DeleteById(int id);
     }
