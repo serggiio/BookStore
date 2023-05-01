@@ -1,4 +1,6 @@
-﻿using BookStore.API.DTOs.ApiResult;
+﻿using BookStore.API.Constants;
+using BookStore.API.DTOs.ApiResult;
+using BookStore.API.DTOs.Errors;
 using BookStore.Domain.Interfaces;
 using BookStore.Domain.Models;
 using BookStore.Infrastructure.Entities;
@@ -50,9 +52,16 @@ namespace BookStore.API.Controllers
 
         // PUT api/<AuthorController>/5
         [HttpPatch("{id}")]
-        public void UpdateAplicant(int id, [FromBody] JsonPatchDocument<Author> personPatch)
+        public IActionResult UpdateAuthor(int id, [FromBody] JsonPatchDocument<Author> authorPatch)
         {
-            
+            ServiceResult<AuthorResponse> serviceResult = this._authorService.UpdateById(authorPatch, id);
+
+            if (!serviceResult.IsValid)
+            {
+                List<BaseError> errors = serviceResult.Errors!.Select(x => new BaseError(x)).ToList();
+                return this.BadRequest(new ApiErrorResult(errors, ResponseMessages.BadRequestMessage));
+            }
+            return this.Ok(new ApiResult<AuthorResponse>(serviceResult.Result!));
         }
 
         // DELETE api/<AuthorController>/5
