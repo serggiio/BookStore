@@ -55,16 +55,27 @@ namespace BookStore.Domain.Services
         public ServiceResult<BookResponse> UpdateById(JsonPatchDocument<Book> book, int id)
         {
             Book bookStored = this._bookRepository.GetById(id);
-            BookResponse bookResponse = new BookResponse();
             book.ApplyTo(bookStored);
 
+            return this.ValidateAndSaveBook(bookStored, id);
+        }
+
+        public ServiceResult<BookResponse> UpdatePut(Book book, int id)
+        {
+            return this.ValidateAndSaveBook(book, id);
+        }
+
+        private ServiceResult<BookResponse> ValidateAndSaveBook(Book book, int id)
+        {
             BookValidator validator = new BookValidator();
-            ValidationResult validationResult = validator.Validate(bookStored);
+            ValidationResult validationResult = validator.Validate(book);
+
+            BookResponse bookResponse = new BookResponse();
 
             if (validationResult.IsValid)
             {
-                this._bookRepository.UpdateById(id, bookStored);
-                bookResponse.Book= bookStored;
+                this._bookRepository.UpdateById(id, book);
+                bookResponse.Book = book;
             }
             else
             {

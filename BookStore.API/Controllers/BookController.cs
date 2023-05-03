@@ -21,7 +21,6 @@ namespace BookStore.API.Controllers
             this._bookService = bookService;
         }
 
-        // GET: api/<BookController>
         [HttpGet]
         public IActionResult Get()
         {
@@ -30,7 +29,6 @@ namespace BookStore.API.Controllers
             return this.Ok(apiResult);
         }
 
-        // GET api/<BookController>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -39,7 +37,6 @@ namespace BookStore.API.Controllers
             return this.Ok(apiResult);
         }
 
-        // POST api/<BookController>
         [HttpPost]
         public IActionResult Post([FromBody] Book newBook)
         {
@@ -47,7 +44,6 @@ namespace BookStore.API.Controllers
             return this.Ok();
         }
 
-        // PUT api/<BookController>/5
         [HttpPatch("{id}")]
         public IActionResult UpdateBook(int id, [FromBody] JsonPatchDocument<Book> bookPatch)
         {
@@ -61,9 +57,28 @@ namespace BookStore.API.Controllers
             return this.Ok(new ApiResult<BookResponse>(serviceResult.Result!));
         }
 
-        // DELETE api/<BookController>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
+        {
+            this._bookService.DeleteById(id);
+            return this.Ok();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Book book)
+        {
+            ServiceResult<BookResponse> serviceResult = this._bookService.UpdatePut(book, id);
+
+            if (!serviceResult.IsValid)
+            {
+                List<BaseError> errors = serviceResult.Errors!.Select(x => new BaseError(x)).ToList();
+                return this.BadRequest(new ApiErrorResult(errors, ResponseMessages.BadRequestMessage));
+            }
+            return this.Ok(new ApiResult<BookResponse>(serviceResult.Result!));
+        }
+
+        [HttpDelete("{id}/Category/{categoryId}")]
+        public IActionResult Delete(int id, int categoryId)
         {
             this._bookService.DeleteById(id);
             return this.Ok();

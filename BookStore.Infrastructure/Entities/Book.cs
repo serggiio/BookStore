@@ -22,8 +22,6 @@ namespace BookStore.Infrastructure.Entities
 
         public List<Category>? Categories { get; set; }
 
-        public List<Language>? Languages { get; set; }
-
         public DateTime? CreationDate { get; set; }
 
         public DateTime? ModificationDate { get; set; }
