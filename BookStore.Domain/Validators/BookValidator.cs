@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.Domain.Validators
 {
-    internal class BookValidator : AbstractValidator<Book>
+    public class BookValidator : AbstractValidator<Book>
     {
         public BookValidator()
         {
