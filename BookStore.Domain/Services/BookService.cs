@@ -17,9 +17,11 @@ namespace BookStore.Domain.Services
     {
 
         private readonly IBaseRepository<Book> _bookRepository;
-        public BookService(IBaseRepository<Book> _bookRepository)
+        private readonly ICategoryBookRepository _categoryRepository;
+        public BookService(IBaseRepository<Book> _bookRepository, ICategoryBookRepository _categoryRepository)
         {
             this._bookRepository = _bookRepository;
+            this._categoryRepository = _categoryRepository;
         }
 
         public void Create(Book book)
@@ -32,39 +34,57 @@ namespace BookStore.Domain.Services
             this._bookRepository.DeleteById(id);
         }
 
-        public void DeleteCategory(int bookId, int languageId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteLanguage(int bookId, int languageId)
-        {
-            throw new NotImplementedException();
-        }
-
         public ServiceResult<IEnumerable<Book>> GetAll()
         {
-            return this._bookRepository.GetAll().ToList();
+            List<Book> books = this._bookRepository.GetAll().ToList();
+            foreach (var book in books)
+            {
+                book.Categories = _categoryRepository.GetCategoriesByBooKId(book.Id).ToList();
+            }
+            return books;
         }
 
         public ServiceResult<Book> GetById(int id)
         {
-            return this._bookRepository.GetById(id);
+            Book book = this._bookRepository.GetById(id);
+            book.Categories = this._categoryRepository.GetCategoriesByBooKId(id).ToList();
+            return book;
         }
 
         public ServiceResult<BookResponse> UpdateById(JsonPatchDocument<Book> book, int id)
         {
             Book bookStored = this._bookRepository.GetById(id);
-            BookResponse bookResponse = new BookResponse();
             book.ApplyTo(bookStored);
 
+            return this.ValidateAndSaveBook(bookStored, id);
+        }
+
+        public ServiceResult<BookResponse> UpdatePut(Book book, int id)
+        {
+            return this.ValidateAndSaveBook(book, id);
+        }
+        public void AddCategory(int bookId, int categoryId)
+        {
+            this._categoryRepository.AddCategoryBook(categoryId, bookId);
+        }
+
+        public void DeleteCategory(int bookId, int categoryId)
+        {
+            this._categoryRepository.DeleteCategoryBook(categoryId, bookId);
+        }
+
+
+        private ServiceResult<BookResponse> ValidateAndSaveBook(Book book, int id)
+        {
             BookValidator validator = new BookValidator();
-            ValidationResult validationResult = validator.Validate(bookStored);
+            ValidationResult validationResult = validator.Validate(book);
+
+            BookResponse bookResponse = new BookResponse();
 
             if (validationResult.IsValid)
             {
-                this._bookRepository.UpdateById(id, bookStored);
-                bookResponse.Book= bookStored;
+                this._bookRepository.UpdateById(id, book);
+                bookResponse.Book = book;
             }
             else
             {

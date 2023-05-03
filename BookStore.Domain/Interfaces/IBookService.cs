@@ -19,11 +19,13 @@ namespace BookStore.Domain.Interfaces
 
         public ServiceResult<BookResponse> UpdateById(JsonPatchDocument<Book> book, int id);
 
+        public ServiceResult<BookResponse> UpdatePut(Book book, int id);
+
         public void DeleteById(int id);
 
-        public void DeleteLanguage(int bookId, int languageId);
+        public void AddCategory(int bookId, int categoryId);
 
-        public void DeleteCategory(int bookId, int languageId);
+        public void DeleteCategory(int bookId, int categoryId);
 
     }
 }

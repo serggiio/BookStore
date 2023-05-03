@@ -21,9 +21,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 SQLConnection sqlConnection = builder.Configuration.GetSection("SQLConnection").Get<SQLConnection>();
 builder.Services.AddScoped<IBaseRepository<Author>>(x => new AuthorRepository(sqlConnection));
 builder.Services.AddScoped<IBaseRepository<Book>>(x => new BookRepository(sqlConnection));
+builder.Services.AddScoped<IBaseRepository<Category>>(x => new CategoryRepository(sqlConnection));
+builder.Services.AddScoped<ICategoryBookRepository>(x => new CategoryRepository(sqlConnection));
 
 builder.Services.UseCustomBadExceptionHandler();
 
