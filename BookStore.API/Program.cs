@@ -14,8 +14,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IBookService, BookService>();
 SQLConnection sqlConnection = builder.Configuration.GetSection("SQLConnection").Get<SQLConnection>();
 builder.Services.AddScoped<IBaseRepository<Author>>(x => new AuthorRepository(sqlConnection));
+builder.Services.AddScoped<IBaseRepository<Book>>(x => new BookRepository(sqlConnection));
 
 var app = builder.Build();
 
