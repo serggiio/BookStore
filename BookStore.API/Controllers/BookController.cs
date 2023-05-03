@@ -77,10 +77,17 @@ namespace BookStore.API.Controllers
             return this.Ok(new ApiResult<BookResponse>(serviceResult.Result!));
         }
 
+        [HttpGet("{id}/Category/{categoryId}")]
+        public IActionResult AddBookCategory(int id, int categoryId)
+        {
+            this._bookService.AddCategory(id, categoryId);
+            return this.Ok();
+        }
+
         [HttpDelete("{id}/Category/{categoryId}")]
         public IActionResult Delete(int id, int categoryId)
         {
-            this._bookService.DeleteById(id);
+            this._bookService.DeleteCategory(id, categoryId);
             return this.Ok();
         }
     }

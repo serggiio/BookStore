@@ -23,9 +23,9 @@ namespace BookStore.Domain.Interfaces
 
         public void DeleteById(int id);
 
-        public void DeleteLanguage(int bookId, int languageId);
+        public void AddCategory(int bookId, int categoryId);
 
-        public void DeleteCategory(int bookId, int languageId);
+        public void DeleteCategory(int bookId, int categoryId);
 
     }
 }

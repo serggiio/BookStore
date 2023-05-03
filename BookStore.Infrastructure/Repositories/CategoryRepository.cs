@@ -1,17 +1,12 @@
 ﻿using BookStore.Infrastructure.Entities;
 using BookStore.Infrastructure.Interfaces;
 using Dapper;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookStore.Infrastructure.Repositories
 {
-    public class CategoryRepository : IBaseRepository<Category>
+    public class CategoryRepository : IBaseRepository<Category>, ICategoryBookRepository
     {
         private readonly SQLConnection connection;
 
@@ -58,6 +53,34 @@ namespace BookStore.Infrastructure.Repositories
             var parameters = new DynamicParameters();
             parameters.Add("@CategoryId", id, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@CategoryName", entity.Name, DbType.String, ParameterDirection.Input);
+            db.Query<Category>(procedure, parameters, commandType: CommandType.StoredProcedure);
+        }
+        public IEnumerable<Category> GetCategoriesByBooKId(int id)
+        {
+            using IDbConnection db = new SqlConnection(this.connection.ConnectionString);
+            var procedure = "Get_Categories_By_Book_Id";
+            var parameters = new DynamicParameters();
+            parameters.Add("@BookId", id, DbType.Int32, ParameterDirection.Input);
+            return db.Query<Category>(procedure, parameters, commandType: CommandType.StoredProcedure);
+        }
+
+        public void AddCategoryBook(int categoryId, int bookId)
+        {
+            using IDbConnection db = new SqlConnection(this.connection.ConnectionString);
+            var procedure = "Add_Category_Book";
+            var parameters = new DynamicParameters();
+            parameters.Add("@CategoryId", categoryId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@bookId", bookId, DbType.Int32, ParameterDirection.Input);
+            db.Query<Category>(procedure, parameters, commandType: CommandType.StoredProcedure);
+        }
+
+        public void DeleteCategoryBook(int categoryId, int bookId)
+        {
+            using IDbConnection db = new SqlConnection(this.connection.ConnectionString);
+            var procedure = "Delete_Category_Book";
+            var parameters = new DynamicParameters();
+            parameters.Add("@CategoryId", categoryId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@bookId", bookId, DbType.Int32, ParameterDirection.Input);
             db.Query<Category>(procedure, parameters, commandType: CommandType.StoredProcedure);
         }
     }
