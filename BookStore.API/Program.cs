@@ -20,14 +20,23 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
+/* builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: myAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+            policy.WithOrigins("http://localhost").AllowAnyHeader().AllowAnyMethod();
         });
+}); */
+builder.Services.AddCors(c =>
+{
+    c.AddPolicy("AllowOrigin", options =>
+    {
+        options.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddScoped<IAuthorService, AuthorService>();
@@ -57,7 +66,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(myAllowSpecificOrigins);
+// app.UseCors(myAllowSpecificOrigins);
+
+app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 

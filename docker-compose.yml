@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  bookstore.api:
+    image: ${DOCKER_REGISTRY-}bookstoreapi
+    restart: always
+    build:
+      context: .
+      dockerfile: BookStore.API/Dockerfile
+    depends_on:
+      - bookstore-db
+    networks:
+      - BOOK-STORE-NET
+
+  bookstore-db:
+    container_name: bookstore-db
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    restart: always
+    ports:
+      - 1433:1433
+    environment:
+        SA_PASSWORD: "S3cur3P@ssW0rd!"
+        ACCEPT_EULA: "Y"
+    volumes:
+      - sqldb:/var/opt/mssql
+      - ./BookStore.Infrastructure/SqlScripts:/db
+    networks:
+      - BOOK-STORE-NET
+    # command: /bin/bash ./db/entrypoint.sh
+
+  bookstore-ui:
+    container_name: bookstore-ui
+    image: "serggiio/db-repository:bookstore-web"
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - bookstore.api
+    networks:
+      - BOOK-STORE-NET
+
+volumes:
+  sqldb:
+    external: false
+
+networks:
+  BOOK-STORE-NET:
+    external: false
